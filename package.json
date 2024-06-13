@@ -1,0 +1,14 @@
+{
+  "name": "light-gg-enhancer",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "build": "node worker.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "undici": "^6.18.2"
+  }
+}
