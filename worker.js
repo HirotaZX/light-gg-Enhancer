@@ -16,17 +16,14 @@ for (const lang of langList) {
     console.log(lang + ' done');
 }
 
-const combinedItemList = [];
+const combinedItemList = {};
 
 for(const key in itemDefineList[langList[0]]) {
-    const combinedItem = {
-        hash: key,
-        name: {}
-    };
+    const combinedItemName = {};
     for (const lang of langList) {
-        combinedItem.name[lang] = itemDefineList[lang][key].displayProperties.name;
+        combinedItemName[lang] = itemDefineList[lang][key].displayProperties.name;
     }
-    combinedItemList.push(combinedItem);
+    combinedItemList[key] = combinedItemName;
 }
 
 await fs.rm('dist', { recursive: true, force: true });
