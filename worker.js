@@ -1,7 +1,7 @@
 import { fetch } from 'undici'
 import * as fs from 'node:fs/promises';
 
-const langList = ['en', 'zh-chs'];
+const langList = ['en', 'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht', 'zh-chs'];
 const itemDefineList = {};
 
 const manifestResp = await fetch('https://www.bungie.net/Platform/Destiny2/Manifest/');
