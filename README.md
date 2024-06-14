@@ -6,15 +6,15 @@ light.gg 功能增强。
 ## Feature / 功能
 1. Highlight perks in weapon reviews, and add tooltip hover to it.
 2. Replace English perk's name with localized version in weapon reviews .
-3. Remember the language you last selected, and automatically switch when the item page language is inconsistent with the selected one.
-4. ...
+3. Remember the language you last selected, and auto switch when the item page language is not the same as the selected one.
+4. Switch bottom tabs to the Reviews tab automatically when entering the page.
 
 ***
 
 1. 高亮武器评论区里的perk，并且添加鼠标悬停弹框。
 2. 将武器评论区里的英文perk名称替换为本地化的版本。
 3. 记住你上次选择的语言，并且当物品页语言与所选不一致时自动进行切换。
-4. ...
+4. 进入页面时，自动将底部的标签页切换到评论区。
 
 ## Usage / 使用
 1. Install [Violentmonkey](https://violentmonkey.github.io/) extension on your desktop browser.

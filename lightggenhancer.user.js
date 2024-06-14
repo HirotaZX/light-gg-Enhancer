@@ -3,13 +3,13 @@
 // @name:zh             light.gg 功能增强
 // @name:zh-CN          light.gg 功能增强
 // @namespace           https://github.com/HirotaZX
-// @version             0.2.1
+// @version             0.2.2
 // @description         light.gg Enhancer.
 // @description:zh      light.gg 功能增强。
 // @description:zh-CN   light.gg 功能增强。
 // @author              HirotaZX
 // @match               https://www.light.gg/*
-// @resource itemList   https://light-gg-enhancer.hirotazx.com/item-list.json?v=202406150000
+// @resource itemList   https://light-gg-enhancer.hirotazx.com/item-list.json?v=202406150200
 // @grant               GM_getResourceText
 // ==/UserScript==
 
