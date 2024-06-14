@@ -13,8 +13,13 @@
 // @grant               GM_getResourceText
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
+
+    // make review tab default
+    function makeReviewTabDefault() {
+        document.getElementById('review-tab').click();
+    }
 
     // transform item words in review to chs and tooltip trigger
     function transformReviewItems() {
@@ -24,26 +29,25 @@
 
         var reviewUrlRegex = /api.light.gg\/items\/\d*\/reviews/;
         var realOpen = window.XMLHttpRequest.prototype.open;
-        window.XMLHttpRequest.prototype.open = function() {
+        window.XMLHttpRequest.prototype.open = function () {
             var url = arguments['1'];
             if (reviewUrlRegex.test(url)) {
-                this.addEventListener('readystatechange', function(e) {
+                this.addEventListener('readystatechange', function (e) {
                     if (this.readyState === 4) {
                         var originalText = e.target.responseText;
                         var modifiedText = originalText;
-                        itemElms.forEach(function(item) {
+                        itemElms.forEach(function (item) {
                             var key = item.dataset.id;
-                            if(itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
+                            if (itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
                                 var newName = itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'];
-                                console.log(newName)
                                 modifiedText = modifiedText.replace(new RegExp(itemList[key]['en'], "ig"),
                                     '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" class=\\"item show-hover notranslate\\" data-id=\\"' + key + '\\">'
                                     + newName.replaceAll('"', '\\"')
                                     + '</span>');
                             }
                         });
-                        Object.defineProperty(this, 'response', {writable: true});
-                        Object.defineProperty(this, 'responseText', {writable: true});
+                        Object.defineProperty(this, 'response', { writable: true });
+                        Object.defineProperty(this, 'responseText', { writable: true });
                         this.response = this.responseText = modifiedText;
                         console.log('【light.gg Enhancer】Review transformed!');
                     }
@@ -56,7 +60,7 @@
     // remember locale
     function persistLocale() {
         var localeStr = window.location.pathname.match(/\/db\/(.*)\/items|\/db\/items/);
-        if(!localeStr || !localeStr[0]) {
+        if (!localeStr || !localeStr[0]) {
             console.log('【light.gg Enhancer】None item page.');
             return;
         }
@@ -69,9 +73,9 @@
             console.log('【light.gg Enhancer】Saved locale: ' + savedLocale);
 
             var curLocale = localeStr[1];
-            if(curLocale) {
-                if(savedLocale) {
-                    if(savedLocale != curLocale) {
+            if (curLocale) {
+                if (savedLocale) {
+                    if (savedLocale != curLocale) {
                         window.location.replace(window.location.pathname.replace(/\/db\/.*\/items/, '/db/' + savedLocale + '/items'));
                         console.log('【light.gg Enhancer】Redirect to saved locale: ' + savedLocale);
                     }
@@ -80,7 +84,7 @@
                     console.log('【light.gg Enhancer】Locale ' + curLocale + ' saved!');
                 }
             } else {
-                if(savedLocale && savedLocale != 'en') {
+                if (savedLocale && savedLocale != 'en') {
                     window.location.replace(window.location.pathname.replace(/\/db\/items/, '/db/' + savedLocale + '/items'));
                     console.log('【light.gg Enhancer】Redirect to saved locale: ' + savedLocale);
                 }
@@ -90,7 +94,7 @@
         // save locale on click locale icon
         function listenLocaleChange() {
             var localeLinks = document.querySelectorAll('#localemodal a, #sidebar-locales a');
-            localeLinks.forEach(function(link) {
+            localeLinks.forEach(function (link) {
                 link.dataset.href = link.href;
                 link.href = 'javascript:void(0);';
                 link.addEventListener('click', handleLocaleClick);
@@ -98,10 +102,10 @@
 
             function handleLocaleClick(e) {
                 var elm = e.currentTarget;
-                if(elm.dataset && elm.dataset.href) {
+                if (elm.dataset && elm.dataset.href) {
                     var elmLocale = 'en';
                     var elmLocaleStr = elm.dataset.href.match(/\/db\/(.*)\/items|\/db\/items/);
-                    if(elmLocaleStr && elmLocaleStr[1]) {
+                    if (elmLocaleStr && elmLocaleStr[1]) {
                         elmLocale = elmLocaleStr[1];
                     }
                     window.localStorage.setItem("enhancer-locale", elmLocale);
@@ -116,7 +120,8 @@
     var script = document.createElement("script");
     script.textContent =
         "window.itemList = " + GM_getResourceText('itemList') + ";\n\n "
-         + "(" + transformReviewItems.toString() + ")();\n\n"
-         + "(" + persistLocale.toString() + ")();\n\n";
+        + "(" + makeReviewTabDefault.toString() + ")();\n\n"
+        + "(" + transformReviewItems.toString() + ")();\n\n"
+        + "(" + persistLocale.toString() + ")();\n\n";
     document.body.appendChild(script);
 })();
