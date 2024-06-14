@@ -1,7 +1,7 @@
 import { fetch } from 'undici'
 import * as fs from 'node:fs/promises';
 
-const langList = ['en', 'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht', 'zh-chs'];
+const langList = ['en', /*'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht',*/ 'zh-chs'];
 const itemFilter = [1, 21, 59]; // [weapon, armor, mods]
 const itemDefineList = {};
 
@@ -23,11 +23,14 @@ for(const key in itemDefineList[langList[0]]) {
     const item = itemDefineList[langList[0]][key];
     // filter items, only keep weapon, armor and mods
     if(item.itemCategoryHashes && item.itemCategoryHashes.some(hash => itemFilter.includes(hash))) {
-        const combinedItemName = {};
-        for (const lang of langList) {
-            combinedItemName[lang] = itemDefineList[lang][key].displayProperties.name;
+        // only keep items have name
+        if(item.displayProperties.name && item.displayProperties.name.trim()) {
+            const combinedItemName = {};
+            for (const lang of langList) {
+                combinedItemName[lang] = itemDefineList[lang][key].displayProperties.name;
+            }
+            combinedItemList[key] = combinedItemName;
         }
-        combinedItemList[key] = combinedItemName;
     }
 }
 
