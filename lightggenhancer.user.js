@@ -36,9 +36,11 @@
                         itemElms.forEach(function(item) {
                             var key = item.dataset.id;
                             if(itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
+                                var newName = itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'];
+                                console.log(newName)
                                 modifiedText = modifiedText.replace(new RegExp(itemList[key]['en'], "ig"),
                                     '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" class=\\"item show-hover notranslate\\" data-id=\\"' + key + '\\">'
-                                    + (itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'])
+                                    + newName.replaceAll('"', '\\"')
                                     + '</span>');
                             }
                         });
