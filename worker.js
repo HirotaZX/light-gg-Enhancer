@@ -1,7 +1,7 @@
 import { fetch } from 'undici'
 import * as fs from 'node:fs/promises';
 
-const langList = ['en', /*'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht',*/ 'zh-chs'];
+const langList = ['en', 'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht', 'zh-chs'];
 const itemFilter = [1, 21, 59]; // [weapon, armor, mods]
 const itemDefineList = {};
 
@@ -28,6 +28,10 @@ for(const key in itemDefineList[langList[0]]) {
             const combinedItemName = {};
             for (const lang of langList) {
                 combinedItemName[lang] = itemDefineList[lang][key].displayProperties.name;
+            }
+            if(item.displayProperties.icon) {
+                const iconHash = item.displayProperties.icon.match(/\/common\/destiny2_content\/icons\/(.*)\.jpg/);
+                combinedItemName.icon =  (iconHash && iconHash[1]) ? iconHash[1] : "";
             }
             combinedItemList[key] = combinedItemName;
         }
