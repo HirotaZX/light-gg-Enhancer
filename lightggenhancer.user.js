@@ -3,7 +3,7 @@
 // @name:zh             light.gg 功能增强
 // @name:zh-CN          light.gg 功能增强
 // @namespace           https://github.com/HirotaZX
-// @version             0.3.4
+// @version             0.3.5
 // @description         Enhancement script for the Destiny 2 tool website light.gg, focused on localization improvements and optimization of other features.
 // @description:zh      命运2工具网站 light.gg 的增强脚本，着重于本地化体验改善以及一些其他功能的优化。
 // @description:zh-CN   命运2工具网站 light.gg 的增强脚本，着重于本地化体验改善以及一些其他功能的优化。
@@ -128,9 +128,10 @@
                     var modifiedText = '<ul id="site-search-result-list" class="list-unstyled">';
 
                     var localeResults = {};
+                    var nonLangProps = ['icon', 'type', 'alias'];
                     for (const key in itemList) {
                         for (const property in itemList[key]) {
-                            if (property != 'icon' && property != 'type' && itemList[key][property].toLowerCase().includes(query.toLowerCase())) {
+                            if (!nonLangProps.includes(property) && itemList[key][property].toLowerCase().includes(query.toLowerCase())) {
                                 if (!localeResults[key]) {
                                     localeResults[key] = [];
                                 }
