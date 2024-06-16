@@ -13,8 +13,18 @@
 // @grant               GM_getResourceText
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
+
+    // append script to page
+    var script = document.createElement("script");
+    script.textContent =
+        "window.itemList = " + GM_getResourceText('itemList') + ";\n\n "
+        + makeReviewTabDefault.toString() + "\n\n"
+        + transformReviewItems.toString() + "\n\n"
+        + persistLocale.toString() + "\n\n"
+        + "(" + initEnhancer.toString() + ")()\n\n";
+    document.body.appendChild(script);
 
     // make review tab default
     function makeReviewTabDefault() {
@@ -22,39 +32,33 @@
     }
 
     // transform item words in review to chs and tooltip trigger
-    function transformReviewItems() {
+    function transformReviewItems(url, xhr) {
         var itemElms = document.querySelectorAll('.item.show-hover');
         var langStr = window.location.pathname.match(/\/db\/(.*)\/items/);
         var lang = langStr ? langStr[1] : 'en';
-
         var reviewUrlRegex = /api.light.gg\/items\/\d*\/reviews/;
-        var realOpen = window.XMLHttpRequest.prototype.open;
-        window.XMLHttpRequest.prototype.open = function () {
-            var url = arguments['1'];
-            if (reviewUrlRegex.test(url)) {
-                this.addEventListener('readystatechange', function (e) {
-                    if (this.readyState === 4) {
-                        var originalText = e.target.responseText;
-                        var modifiedText = originalText;
-                        itemElms.forEach(function (item) {
-                            var key = item.dataset.id;
-                            if (itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
-                                var newName = itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'];
-                                modifiedText = modifiedText.replace(new RegExp(itemList[key]['en'], "ig"),
-                                    '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" class=\\"item show-hover notranslate\\" data-id=\\"' + key + '\\">'
-                                    + newName.replaceAll('"', '\\"')
-                                    + '</span>');
-                            }
-                        });
-                        Object.defineProperty(this, 'response', { writable: true });
-                        Object.defineProperty(this, 'responseText', { writable: true });
-                        this.response = this.responseText = modifiedText;
-                        console.log('【light.gg Enhancer】Review transformed!');
-                    }
-                });
-            }
-            return realOpen.apply(this, arguments);
-        };
+        if (reviewUrlRegex.test(url)) {
+            xhr.addEventListener('readystatechange', function (e) {
+                if (xhr.readyState === 4) {
+                    var originalText = e.target.responseText;
+                    var modifiedText = originalText;
+                    itemElms.forEach(function (item) {
+                        var key = item.dataset.id;
+                        if (itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
+                            var newName = itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'];
+                            modifiedText = modifiedText.replace(new RegExp(itemList[key]['en'], "ig"),
+                                '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" class=\\"item show-hover notranslate\\" data-id=\\"' + key + '\\">'
+                                + newName.replaceAll('"', '\\"')
+                                + '</span>');
+                        }
+                    });
+                    Object.defineProperty(xhr, 'response', { writable: true });
+                    Object.defineProperty(xhr, 'responseText', { writable: true });
+                    xhr.response = xhr.responseText = modifiedText;
+                    console.log('【light.gg Enhancer】Review transformed!');
+                }
+            });
+        }
     }
 
     // remember locale
@@ -116,12 +120,17 @@
         }
     }
 
-    // append script to page
-    var script = document.createElement("script");
-    script.textContent =
-        "window.itemList = " + GM_getResourceText('itemList') + ";\n\n "
-        + "(" + makeReviewTabDefault.toString() + ")();\n\n"
-        + "(" + transformReviewItems.toString() + ")();\n\n"
-        + "(" + persistLocale.toString() + ")();\n\n";
-    document.body.appendChild(script);
+
+    function initEnhancer() {
+        makeReviewTabDefault();
+        persistLocale();
+
+        // hijack xhr to modify requests
+        var realOpen = window.XMLHttpRequest.prototype.open;
+        window.XMLHttpRequest.prototype.open = function () {
+            var url = arguments['1'];
+            transformReviewItems(url, this);
+            return realOpen.apply(this, arguments);
+        }
+    }
 })();
