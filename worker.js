@@ -17,11 +17,7 @@ for (const lang of langList) {
     console.log(lang + ' done');
 }
 
-const splitItemList = {
-    weapon: {},
-    armor: {},
-    mods: {}
-};
+const combinedItemList = {};
 
 for(const key in itemDefineList[langList[0]]) {
     const item = itemDefineList[langList[0]][key];
@@ -37,18 +33,16 @@ for(const key in itemDefineList[langList[0]]) {
                 const iconHash = item.displayProperties.icon.match(/\/common\/destiny2_content\/icons\/(.*)/);
                 combinedItemName.icon =  (iconHash && iconHash[1]) ? iconHash[1] : "";
             }
-            if(item.itemCategoryHashes.includes(1)) {
-                splitItemList.weapon[key] = combinedItemName;
-            } else if(item.itemCategoryHashes.includes(21)) {
-                splitItemList.armor[key] = combinedItemName;
-            } else if(item.itemCategoryHashes.includes(59)) {
-                splitItemList.mods[key] = combinedItemName;
-            }
+            itemFilter.some(type => {
+                if(item.itemCategoryHashes.includes(type)) {
+                    combinedItemName.type = type;
+                    return true;
+                }
+            });
+            combinedItemList[key] = combinedItemName;
         }
     }
 }
-
-const combinedItemList = Object.assign({}, splitItemList.weapon, splitItemList.armor, splitItemList.mods);
 
 await fs.rm('dist', { recursive: true, force: true });
 await fs.mkdir('dist', { recursive: true });
