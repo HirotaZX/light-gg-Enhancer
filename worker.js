@@ -30,7 +30,7 @@ for(const key in itemDefineList[langList[0]]) {
                 combinedItemName[lang] = itemDefineList[lang][key].displayProperties.name;
             }
             if(item.displayProperties.icon) {
-                const iconHash = item.displayProperties.icon.match(/\/common\/destiny2_content\/icons\/(.*)\.jpg/);
+                const iconHash = item.displayProperties.icon.match(/\/common\/destiny2_content\/icons\/(.*)/);
                 combinedItemName.icon =  (iconHash && iconHash[1]) ? iconHash[1] : "";
             }
             combinedItemList[key] = combinedItemName;
