@@ -1,20 +1,24 @@
 # light.gg Enhancer / light.gg 功能增强
-light.gg Enhancer.
+Enhancement script for the Destiny 2 tool website **light.gg**, focused on localization improvements and optimization of other features.
 
-light.gg 功能增强。
+命运2工具网站 **light.gg** 的增强脚本，着重于本地化体验改善以及一些其他功能的优化。
 
 ## Feature / 功能
-1. Highlight perks in weapon reviews, and add tooltip hover to it.
-2. Replace English perk's name with localized version in weapon reviews .
-3. Remember the language you last selected, and auto switch when the item page language is not the same as the selected one.
-4. Switch bottom tabs to the Reviews tab automatically when entering the page.
+1. Search items by name in ANY language. (If the search is not triggered, try pressing the space bar.)
+2. Highlight perks in weapon reviews, and add tooltip hover to it.
+3. Replace English perk's name with localized version in weapon reviews .
+4. Remember the language you last selected, and auto switch when the item page language is not the same as the selected one.
+5. Switch bottom tabs to the Reviews tab automatically when entering the page.
+6. ...
 
 ***
 
-1. 高亮武器评论区里的perk，并且添加鼠标悬停弹框。
-2. 将武器评论区里的英文perk名称替换为本地化的版本。
-3. 记住你上次选择的语言，并且当物品页语言与所选不一致时自动进行切换。
-4. 进入页面时，自动将底部的标签页切换到评论区。
+1. 用任意语言搜索道具名称。（如果搜索没有触发，可以尝试按下空格）
+2. 高亮武器评论区里的perk，并且添加鼠标悬停弹框。
+3. 将武器评论区里的英文perk名称替换为本地化的版本。
+4. 记住你上次选择的语言，并且当物品页语言与所选不一致时自动进行切换。
+5. 进入页面时，自动将底部的标签页切换到评论区。
+6. ...
 
 ## Usage / 使用
 1. Install [Violentmonkey](https://violentmonkey.github.io/) extension on your desktop browser.
