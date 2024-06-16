@@ -17,7 +17,7 @@ for (const lang of langList) {
     console.log(lang + ' done');
 }
 
-const combinedItemList = {
+const splitItemList = {
     weapon: {},
     armor: {},
     mods: {}
@@ -38,15 +38,17 @@ for(const key in itemDefineList[langList[0]]) {
                 combinedItemName.icon =  (iconHash && iconHash[1]) ? iconHash[1] : "";
             }
             if(item.itemCategoryHashes.includes(1)) {
-                combinedItemList.weapon[key] = combinedItemName;
+                splitItemList.weapon[key] = combinedItemName;
             } else if(item.itemCategoryHashes.includes(21)) {
-                combinedItemList.armor[key] = combinedItemName;
+                splitItemList.armor[key] = combinedItemName;
             } else if(item.itemCategoryHashes.includes(59)) {
-                combinedItemList.mods[key] = combinedItemName;
+                splitItemList.mods[key] = combinedItemName;
             }
         }
     }
 }
+
+const combinedItemList = Object.assign({}, splitItemList.weapon, splitItemList.armor, splitItemList.mods);
 
 await fs.rm('dist', { recursive: true, force: true });
 await fs.mkdir('dist', { recursive: true });
