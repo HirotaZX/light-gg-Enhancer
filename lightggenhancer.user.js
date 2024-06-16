@@ -3,13 +3,13 @@
 // @name:zh             light.gg 功能增强
 // @name:zh-CN          light.gg 功能增强
 // @namespace           https://github.com/HirotaZX
-// @version             0.3.1
+// @version             0.3.4
 // @description         Enhancement script for the Destiny 2 tool website light.gg, focused on localization improvements and optimization of other features.
 // @description:zh      命运2工具网站 light.gg 的增强脚本，着重于本地化体验改善以及一些其他功能的优化。
 // @description:zh-CN   命运2工具网站 light.gg 的增强脚本，着重于本地化体验改善以及一些其他功能的优化。
 // @author              HirotaZX
 // @match               https://www.light.gg/*
-// @resource itemList   https://light-gg-enhancer.hirotazx.com/item-list.json?v=202406162100
+// @resource itemList   https://light-gg-enhancer.hirotazx.com/item-list.json?v=202406170600
 // @grant               GM_getResourceText
 // ==/UserScript==
 
