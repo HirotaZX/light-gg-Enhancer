@@ -13,7 +13,7 @@
 // @grant               GM_getResourceText
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     // append script to page
@@ -44,17 +44,56 @@
             xhr.addEventListener('readystatechange', function (e) {
                 if (xhr.readyState === 4) {
                     var originalText = e.target.responseText;
-                    var modifiedText = originalText;
+                    var segmentTree = {
+                        hash: null,
+                        text: originalText,
+                        children: null
+                    };
+
                     itemElms.forEach(function (item) {
                         var key = item.dataset.id;
                         if (itemList[key] && itemList[key]['en'] && itemList[key]['en'].trim()) {
-                            var newName = itemList[key][lang] ? itemList[key][lang] : itemList[key]['en'];
-                            modifiedText = modifiedText.replace(new RegExp(itemList[key]['en'], "ig"),
-                                '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" class=\\"item show-hover notranslate\\" data-id=\\"' + key + '\\">'
-                                + newName.replaceAll('"', '\\"')
-                                + '</span>');
+                            // match English name and common alias
+                            var matchStr = itemList[key]['en'] + (itemList[key]['alias'] ? ('|' + itemList[key]['alias'].join('|')) : '');
+                            // match hypen and masterwork
+                            var replaceRegex = new RegExp(matchStr.replaceAll('-', '[\\s-_]').replace('Tier 9: ', ''), "ig");
+
+                            function buildTree(node) {
+                                if (!node.hash) {
+                                    var segArr = node.text.split(replaceRegex);
+                                    if (segArr.length > 1) {
+                                        node.hash = key;
+                                        node.children = segArr.map(function (seg) {
+                                            return {
+                                                hash: null,
+                                                text: seg,
+                                                children: null
+                                            }
+                                        });
+                                    }
+                                } else if (node.hash != key && node.children) {
+                                    node.children.forEach(buildTree);
+                                }
+                            }
+                            buildTree(segmentTree);
                         }
                     });
+                    console.log('【light.gg Enhancer】Review segment tree built!', segmentTree);
+
+                    function traverseTree(node) {
+                        if (node.children) {
+                            var newName = itemList[node.hash][lang] ? itemList[node.hash][lang] : itemList[node.hash]['en'];
+                            return node.children.map(traverseTree).join(
+                                '<span translate=\\"no\\" style=\\"color:dodgerblue;font-weight:bold;\\" '
+                                + 'class=\\"item show-hover notranslate\\" data-id=\\"' + node.hash + '\\">'
+                                + newName.replaceAll('"', '\\"')
+                                + '</span>');
+                        } else {
+                            return node.text;
+                        }
+                    }
+
+                    var modifiedText = traverseTree(segmentTree);
                     Object.defineProperty(xhr, 'response', { writable: true });
                     Object.defineProperty(xhr, 'responseText', { writable: true });
                     xhr.response = xhr.responseText = modifiedText;
@@ -68,10 +107,10 @@
     function appendLocaleSearch(url, xhr) {
         var searchUrlRegex = /\/db\/search\/all\?q=([^&]*)/;
         var searchUrlStr = url.match(searchUrlRegex);
-        if(searchUrlStr && searchUrlStr[1]) {
-            xhr.send = function() {
+        if (searchUrlStr && searchUrlStr[1]) {
+            xhr.send = function () {
                 var searchTime = (new Date()).getTime();
-                if(lastSearchTime && (searchTime - lastSearchTime < 1000)) {
+                if (lastSearchTime && (searchTime - lastSearchTime < 1000)) {
                     console.log('【light.gg Enhancer】Abort search!');
                     xhr.abort();
                     return;
@@ -79,20 +118,20 @@
                 lastSearchTime = searchTime;
 
                 var query = decodeURIComponent(searchUrlStr[1]).trim();
-                if(!query || query.length < 2) {
+                if (!query || query.length < 2) {
                     console.log('【light.gg Enhancer】Abort search!');
                     xhr.abort();
                     return;
                 }
 
-                setTimeout(function() {
+                setTimeout(function () {
                     var modifiedText = '<ul id="site-search-result-list" class="list-unstyled">';
 
                     var localeResults = {};
                     for (const key in itemList) {
                         for (const property in itemList[key]) {
-                            if(property != 'icon' && property != 'type' && itemList[key][property].toLowerCase().includes(query.toLowerCase())) {
-                                if(!localeResults[key]) {
+                            if (property != 'icon' && property != 'type' && itemList[key][property].toLowerCase().includes(query.toLowerCase())) {
+                                if (!localeResults[key]) {
                                     localeResults[key] = [];
                                 }
                                 localeResults[key].push(property);
@@ -102,25 +141,25 @@
 
                     var localeResultStr = '';
                     // sort results in weapon, armor, mods order and take first 50
-                    Object.keys(localeResults).sort(function(entryA, entryB) {
+                    Object.keys(localeResults).sort(function (entryA, entryB) {
                         return itemList[entryA].type - itemList[entryB].type;
-                    }).slice(0, 50).forEach(function(key) {
+                    }).slice(0, 50).forEach(function (key) {
                         var localeNames = '';
-                        localeResults[key].forEach(function(lang) {
+                        localeResults[key].forEach(function (lang) {
                             localeNames += itemList[key][lang] + ' / ';
                         });
-                        if(localeNames) {
+                        if (localeNames) {
                             localeNames = localeNames.slice(0, -3);
                         }
                         localeResultStr += '<li class="basic "><a href="/db/items/' + key + '" class="clearfix">'
-                                        + '<div class="icon"><img src="https://www.bungie.net/common/destiny2_content/icons/'
-                                        + itemList[key].icon + '" alt="' + itemList[key]['en'] + '" class="pull-left" /></div>'
-                                        + '<div><div><strong class="text-basic ">' + itemList[key]['en']
-                                        + '</strong></div><div><span>' + localeNames + '</span></div></div></a></li>';
+                            + '<div class="icon"><img src="https://www.bungie.net/common/destiny2_content/icons/'
+                            + itemList[key].icon + '" alt="' + itemList[key]['en'] + '" class="pull-left" /></div>'
+                            + '<div><div><strong class="text-basic ">' + itemList[key]['en']
+                            + '</strong></div><div><span>' + localeNames + '</span></div></div></a></li>';
                     });
 
                     modifiedText += localeResultStr;
-                    if(!localeResultStr) {
+                    if (!localeResultStr) {
                         modifiedText += '<li><a href="javascript:"><div><span><em>No items found</em></span></div></a></li>';
                     }
 
@@ -211,3 +250,4 @@
         }
     }
 })();
+

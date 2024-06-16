@@ -5,7 +5,7 @@ Enhancement script for the Destiny 2 tool website **light.gg**, focused on local
 
 ## Feature / 功能
 1. Search items by name in ANY language. (If the search is not triggered, try pressing the space bar.)
-2. Highlight perks in weapon reviews, and add tooltip hover to it.
+2. Highlight perks in weapon reviews, and add tooltip hover to it. (Contribution to the alias dictionary is welcomed.)
 3. Replace English perk's name with localized version in weapon reviews .
 4. Remember the language you last selected, and auto switch when the item page language is not the same as the selected one.
 5. Switch bottom tabs to the Reviews tab automatically when entering the page.
@@ -14,7 +14,7 @@ Enhancement script for the Destiny 2 tool website **light.gg**, focused on local
 ***
 
 1. 用任意语言搜索道具名称。（如果搜索没有触发，可以尝试按下空格）
-2. 高亮武器评论区里的perk，并且添加鼠标悬停弹框。
+2. 高亮武器评论区里的perk，并且添加鼠标悬停弹框。（欢迎贡献别名词典）
 3. 将武器评论区里的英文perk名称替换为本地化的版本。
 4. 记住你上次选择的语言，并且当物品页语言与所选不一致时自动进行切换。
 5. 进入页面时，自动将底部的标签页切换到评论区。
