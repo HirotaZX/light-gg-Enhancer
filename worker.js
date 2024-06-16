@@ -17,7 +17,11 @@ for (const lang of langList) {
     console.log(lang + ' done');
 }
 
-const combinedItemList = {};
+const combinedItemList = {
+    weapon: {},
+    armor: {},
+    mods: {}
+};
 
 for(const key in itemDefineList[langList[0]]) {
     const item = itemDefineList[langList[0]][key];
@@ -33,7 +37,13 @@ for(const key in itemDefineList[langList[0]]) {
                 const iconHash = item.displayProperties.icon.match(/\/common\/destiny2_content\/icons\/(.*)/);
                 combinedItemName.icon =  (iconHash && iconHash[1]) ? iconHash[1] : "";
             }
-            combinedItemList[key] = combinedItemName;
+            if(item.itemCategoryHashes.includes(1)) {
+                combinedItemList.weapon[key] = combinedItemName;
+            } else if(item.itemCategoryHashes.includes(21)) {
+                combinedItemList.armor[key] = combinedItemName;
+            } else if(item.itemCategoryHashes.includes(59)) {
+                combinedItemList.mods[key] = combinedItemName;
+            }
         }
     }
 }
