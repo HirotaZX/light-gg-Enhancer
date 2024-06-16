@@ -1,5 +1,6 @@
 import { fetch } from 'undici'
 import * as fs from 'node:fs/promises';
+import aliasList from './alias';
 
 const langList = ['en', 'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht', 'zh-chs'];
 const itemFilter = [1, 21, 59]; // [weapon, armor, mods]
@@ -42,6 +43,10 @@ for(const key in itemDefineList[langList[0]]) {
             combinedItemList[key] = combinedItemName;
         }
     }
+}
+
+for(const key in aliasList) {
+    combinedItemList[key].alias = aliasList[key];
 }
 
 await fs.rm('dist', { recursive: true, force: true });
