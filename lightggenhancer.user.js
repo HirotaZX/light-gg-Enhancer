@@ -20,15 +20,18 @@
     var script = document.createElement("script");
     script.textContent =
         "window.itemList = " + GM_getResourceText('itemList') + ";\n\n "
+        + "window.lastSearchTime = null;\n\n "
         + makeReviewTabDefault.toString() + "\n\n"
         + transformReviewItems.toString() + "\n\n"
+        + appendLocaleSearch.toString() + "\n\n"
         + persistLocale.toString() + "\n\n"
         + "(" + initEnhancer.toString() + ")()\n\n";
     document.body.appendChild(script);
 
     // make review tab default
     function makeReviewTabDefault() {
-        document.getElementById('review-tab').click();
+        var reviewTab = document.getElementById('review-tab');
+        reviewTab && reviewTab.click();
     }
 
     // transform item words in review to chs and tooltip trigger
@@ -58,6 +61,79 @@
                     console.log('【light.gg Enhancer】Review transformed!');
                 }
             });
+        }
+    }
+
+    // append locale item to search results
+    function appendLocaleSearch(url, xhr) {
+        var searchUrlRegex = /\/db\/search\/all\?q=([^&]*)/;
+        var searchUrlStr = url.match(searchUrlRegex);
+        if(searchUrlStr && searchUrlStr[1]) {
+            xhr.send = function() {
+                var searchTime = (new Date()).getTime();
+                if(lastSearchTime && (searchTime - lastSearchTime < 1000)) {
+                    console.log('【light.gg Enhancer】Abort search!');
+                    xhr.abort();
+                    return;
+                }
+                lastSearchTime = searchTime;
+
+                var query = decodeURIComponent(searchUrlStr[1]).trim();
+                if(!query || query.length < 2) {
+                    console.log('【light.gg Enhancer】Abort search!');
+                    xhr.abort();
+                    return;
+                }
+
+                setTimeout(function() {
+                    var modifiedText = '<ul id="site-search-result-list" class="list-unstyled">';
+
+                    var localeResults = {};
+                    for (const key in itemList) {
+                        for (const property in itemList[key]) {
+                            if(property != 'icon' && property != 'type' && itemList[key][property].toLowerCase().includes(query.toLowerCase())) {
+                                if(!localeResults[key]) {
+                                    localeResults[key] = [];
+                                }
+                                localeResults[key].push(property);
+                            }
+                        }
+                    }
+
+                    var localeResultStr = '';
+                    // sort results in weapon, armor, mods order and take first 50
+                    Object.keys(localeResults).sort(function(entryA, entryB) {
+                        return itemList[entryA].type - itemList[entryB].type;
+                    }).slice(0, 50).forEach(function(key) {
+                        var localeNames = '';
+                        localeResults[key].forEach(function(lang) {
+                            localeNames += itemList[key][lang] + ' / ';
+                        });
+                        if(localeNames) {
+                            localeNames = localeNames.slice(0, -3);
+                        }
+                        localeResultStr += '<li class="basic "><a href="/db/items/' + key + '" class="clearfix">'
+                                        + '<div class="icon"><img src="https://www.bungie.net/common/destiny2_content/icons/'
+                                        + itemList[key].icon + '" alt="' + itemList[key]['en'] + '" class="pull-left" /></div>'
+                                        + '<div><div><strong class="text-basic ">' + itemList[key]['en']
+                                        + '</strong></div><div><span>' + localeNames + '</span></div></div></a></li>';
+                    });
+
+                    modifiedText += localeResultStr;
+                    if(!localeResultStr) {
+                        modifiedText += '<li><a href="javascript:"><div><span><em>No items found</em></span></div></a></li>';
+                    }
+
+                    modifiedText += '</ul>';
+                    Object.defineProperty(xhr, 'response', { writable: true });
+                    Object.defineProperty(xhr, 'responseText', { writable: true });
+                    Object.defineProperty(xhr, 'status', { writable: true });
+                    xhr.response = xhr.responseText = modifiedText;
+                    xhr.status = 200;
+                    xhr.onload();
+                    console.log('【light.gg Enhancer】Locale search results appended!');
+                }, 0);
+            };
         }
     }
 
@@ -130,6 +206,7 @@
         window.XMLHttpRequest.prototype.open = function () {
             var url = arguments['1'];
             transformReviewItems(url, this);
+            appendLocaleSearch(url, this);
             return realOpen.apply(this, arguments);
         }
     }
