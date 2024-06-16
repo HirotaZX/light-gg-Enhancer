@@ -1,6 +1,6 @@
 import { fetch } from 'undici'
 import * as fs from 'node:fs/promises';
-import aliasList from './alias';
+import aliasList from './alias.js';
 
 const langList = ['en', 'fr', 'es', 'es-mx', 'de', 'it', 'ja', 'pt-br', 'ru', 'pl', 'ko', 'zh-cht', 'zh-chs'];
 const itemFilter = [1, 21, 59]; // [weapon, armor, mods]
