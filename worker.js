@@ -22,8 +22,8 @@ const combinedItemList = {};
 
 for(const key in itemDefineList[langList[0]]) {
     const item = itemDefineList[langList[0]][key];
-    // filter items, only keep weapon, armor and mods
-    if(item.itemCategoryHashes && item.itemCategoryHashes.some(hash => itemFilter.includes(hash))) {
+    // filter items, only keep weapon, armor and mods, remove uncollectible items
+    if(item.itemCategoryHashes && item.itemCategoryHashes.some(hash => itemFilter.includes(hash)) && (!item.equippable || item.collectibleHash)) {
         // only keep items have name
         if(item.displayProperties.name && item.displayProperties.name.trim()) {
             const combinedItemName = {};
